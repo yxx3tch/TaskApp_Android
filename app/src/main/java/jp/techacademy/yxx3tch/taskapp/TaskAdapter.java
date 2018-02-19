@@ -7,7 +7,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by yxx3tch on 2018/02/18.
@@ -15,13 +18,13 @@ import java.util.List;
 
 public class TaskAdapter extends BaseAdapter {
     private LayoutInflater mLayoutInflater;
-    private List<String> mTaskList;
+    private List<Task> mTaskList;
 
     public TaskAdapter(Context context) {
         mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    public void setTaskList(List<String> taskList) {
+    public void setTaskList(List<Task> taskList) {
         mTaskList = taskList;
     }
 
@@ -37,7 +40,7 @@ public class TaskAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return mTaskList.get(position).getId();
     }
 
     @Override
@@ -49,8 +52,10 @@ public class TaskAdapter extends BaseAdapter {
         TextView textView1 = (TextView) convertView.findViewById(android.R.id.text1);
         TextView textView2 = (TextView) convertView.findViewById(android.R.id.text2);
 
-        // 後でTaskクラスから情報を取得するように変更する
-        textView1.setText(mTaskList.get(position));
+        textView1.setText(mTaskList.get(position).getTitle());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.JAPANESE);
+        Date date = mTaskList.get(position).getDate();
+        textView2.setText(simpleDateFormat.format(date));
 
         return convertView;
     }
