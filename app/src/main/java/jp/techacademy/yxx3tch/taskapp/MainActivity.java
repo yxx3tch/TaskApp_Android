@@ -134,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
+                // close buttonが押されたら初期画面に戻す
                 getSupportActionBar().setTitle("TaskApp");
                 getSupportActionBar().setDisplayShowTitleEnabled(true);
                 searchView.setQuery("", false);
@@ -160,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
                     getSupportActionBar().setTitle(searchWord);
                     getSupportActionBar().setDisplayShowTitleEnabled(true);
                     // searchWordがあることを確認
-                    // Realmデータベースから、「全てのデータを取得して新しい日時順に並べた結果」を取得
+                    // Realmデータベースから、「カテゴリーが検索ワードと一致するデータを取得して新しい日時順に並べた結果」を取得
                     RealmResults<Task> taskRealmResults = mRealm.where(Task.class).equalTo("category", searchWord).findAllSorted("date", Sort.DESCENDING);
                     // 上記の結果を、TaskList としてセットする
                     mTaskAdapter.setTaskList(mRealm.copyFromRealm(taskRealmResults));
