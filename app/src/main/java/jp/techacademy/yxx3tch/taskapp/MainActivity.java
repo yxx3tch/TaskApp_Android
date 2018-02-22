@@ -6,12 +6,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.SearchView;
 
 import java.util.Date;
 
@@ -32,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     };
     private ListView mListView;
     private TaskAdapter mTaskAdapter;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +118,67 @@ public class MainActivity extends AppCompatActivity {
         });
 
         reloadListView();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        // SearchViewを取得する
+        MenuItem searchItem = menu.findItem(R.id.searchView);
+        searchView = (SearchView) searchItem.getActionView();
+        searchView.setIconifiedByDefault(true);
+        searchView.setSubmitButtonEnabled(false);
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                getSupportActionBar().setTitle("TaskApp");
+                getSupportActionBar().setDisplayShowTitleEnabled(true);
+                searchView.setQuery("", false);
+                searchView.onActionViewCollapsed();
+                searchView.clearFocus();
+                reloadListView();
+                return false;
+            }
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String searchWord) {
+                // SubmitボタンorEnterKeyを押されたら呼び出されるメソッド
+
+                // 虫眼鏡アイコンを隠す
+                searchView.setIconified(false);
+                // SearchViewを隠す
+                searchView.onActionViewCollapsed();
+                // Focusを外す
+                searchView.clearFocus();
+
+                if (searchWord != null && !searchWord.equals("")) {
+                    getSupportActionBar().setTitle(searchWord);
+                    getSupportActionBar().setDisplayShowTitleEnabled(true);
+                    // searchWordがあることを確認
+                    // Realmデータベースから、「全てのデータを取得して新しい日時順に並べた結果」を取得
+                    RealmResults<Task> taskRealmResults = mRealm.where(Task.class).equalTo("category", searchWord).findAllSorted("date", Sort.DESCENDING);
+                    // 上記の結果を、TaskList としてセットする
+                    mTaskAdapter.setTaskList(mRealm.copyFromRealm(taskRealmResults));
+                    // TaskのListView用のアダプタに渡す
+                    mListView.setAdapter(mTaskAdapter);
+                    // 表示を更新するために、アダプターにデータが変更されたことを知らせる
+                    mTaskAdapter.notifyDataSetChanged();
+                }
+
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        return true;
     }
 
     private void reloadListView() {

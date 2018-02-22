@@ -25,7 +25,7 @@ public class InputActivity extends AppCompatActivity {
 
     private int mYear, mMonth, mDay, mHour, mMinute;
     private Button mDateButton, mTimeButton;
-    private EditText mTitleEdit, mContentEdit;
+    private EditText mTitleEdit, mCategoryEdit, mContentEdit;
     private Task mTask;
     private View.OnClickListener mOnDateClickListener = new View.OnClickListener() {
         @Override
@@ -89,6 +89,7 @@ public class InputActivity extends AppCompatActivity {
         mTimeButton.setOnClickListener(mOnTimeClickListener);
         findViewById(R.id.done_button).setOnClickListener(mOnDoneClickListener);
         mTitleEdit = (EditText)findViewById(R.id.title_edit_text);
+        mCategoryEdit = (EditText)findViewById(R.id.category_edit_text);
         mContentEdit = (EditText)findViewById(R.id.content_edit_text);
 
         // EXTRA_TASK から Task の id を取得して、 id から Task のインスタンスを取得する
@@ -147,10 +148,12 @@ public class InputActivity extends AppCompatActivity {
         }
 
         String title = mTitleEdit.getText().toString();
+        String category = mCategoryEdit.getText().toString();
         String content = mContentEdit.getText().toString();
 
         mTask.setTitle(title);
         mTask.setContents(content);
+        mTask.setCategory(category);
         GregorianCalendar calendar = new GregorianCalendar(mYear,mMonth,mDay,mHour,mMinute);
         Date date = calendar.getTime();
         mTask.setDate(date);
